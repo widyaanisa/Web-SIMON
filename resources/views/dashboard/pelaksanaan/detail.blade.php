@@ -52,7 +52,8 @@ $masterLayout = 'layouts.dashboardsurveiyor';
           <div class="form-row">
             <div class="name">Bulan - Tahun</div>
             <div class="value">
-              <input  pattern="\d{1,2}-\d{4}" class="form-control bg-white border-1 small mr-4" type="text" name="bulan_tahun" id="input-month" value="{{ $pelaksanaan->bulan_tahun }}">
+              <input pattern="\d{1,2}-\d{4}" class="form-control bg-white border-1 small mr-4" type="text" name="bulan_tahun" id="input-month"
+                value="{{ $pelaksanaan->bulan_tahun }}">
             </div>
           </div>
 
@@ -83,29 +84,29 @@ $masterLayout = 'layouts.dashboardsurveiyor';
           <div class="form-row">
             <div class="name">Personal</div>
             <div class="value">
-                  <input value="{{ $pelaksanaan->personal }}"class="form-control bg-white border-1 small mr-4" type="text" name="personal" readonly>
-          </div>
-          <div class="form-row">
-            <div class="name">Outcome</div>
-            <div class="value">
-              <input value="{{ $pelaksanaan->outcome }}" id="outcome" type="hidden" name="outcome">
-              <trix-editor input="outcome"></trix-editor>
+              <input value="{{ $pelaksanaan->personal }}" class="form-control bg-white border-1 small mr-4" type="text" name="personal" readonly>
+            </div>
+            <div class="form-row">
+              <div class="name">Outcome</div>
+              <div class="value">
+                <input value="{{ $pelaksanaan->outcome }}" id="outcome" type="hidden" name="outcome">
+                <trix-editor input="outcome"></trix-editor>
+              </div>
             </div>
           </div>
-        </div>
-        <div class="form-row">
-          <div class="name">status_id</div>
-          <div class="value">
-            <select class="form-control" name="status_id">
-              <option value="2"{{ old('status_id',$pelaksanaan->status_id) == 2 ? 'selected' : '' }}>Belum Terlaksana</option>
-              <option value="1"{{ old('status_id',$pelaksanaan->status_id) == 1 ? 'selected' : '' }}>Terlaksana</option>
-          </select>
-        </div>
-      </div>
-        <div class="card-footer text-right">
-          <a class="btn btn-secondary" href="{{ route('pelaksanaan.index') }}">Cancel</a>
-          <button class="btn btn-primary" type="submit">Submit</button>
-        </div>
+          <div class="form-row">
+            <div class="name">status_id</div>
+            <div class="value">
+              <select class="form-control" name="status_id">
+                <option value="2" {{ old('status_id', $pelaksanaan->status_id) == 2 ? 'selected' : '' }}>Belum Terlaksana</option>
+                <option value="1" {{ old('status_id', $pelaksanaan->status_id) == 1 ? 'selected' : '' }}>Terlaksana</option>
+              </select>
+            </div>
+          </div>
+          <div class="card-footer text-right">
+            <a class="btn btn-secondary" href="{{ route('pelaksanaan.index') }}">Cancel</a>
+            <button class="btn btn-primary" type="submit">Submit</button>
+          </div>
       </form>
     </div>
 
@@ -128,7 +129,7 @@ $masterLayout = 'layouts.dashboardsurveiyor';
                   <td>{{ $file->nama_file }}</td>
                   <td>
                     <a class="btn btn-sm btn-outline-primary"
-                      href="{{ asset('file/pelaksanaan/' . $pelaksanaan->id . '/file_pelaksanaan' . $file->nama_file) }}" target="_blank">
+                      href="{{ asset('file/pelaksanaan/' . $pelaksanaan->id . '/file_pelaksanaan/' . $file->nama_file) }}" target="_blank">
                       Download
                     </a>
                     <form method="POST" style="display: inline" action="{{ route('pelaksanaan.removefile', $pelaksanaan->id) }}">
@@ -179,7 +180,7 @@ $masterLayout = 'layouts.dashboardsurveiyor';
                   <td>{{ ++$key }}</td>
                   <td>{{ $file->nama_file }}</td>
                   <td>
-                    <a class="btn btn-sm btn-outline-primary" href="{{ asset('file/pelaksanaan/' . $pelaksanaan->id . '/file_laporan' . $file->nama_file) }}"
+                    <a class="btn btn-sm btn-outline-primary" href="{{ asset('file/pelaksanaan/' . $pelaksanaan->id . '/file_laporan/' . $file->nama_file) }}"
                       target="_blank">
                       Download
                     </a>
@@ -231,7 +232,7 @@ $masterLayout = 'layouts.dashboardsurveiyor';
                   <td>{{ ++$key }}</td>
                   <td>{{ $file->nama_file }}</td>
                   <td>
-                    <a class="btn btn-sm btn-outline-primary" href="{{ asset('file/pelaksanaan/' . $pelaksanaan->id . '/file_perwaktu' . $file->nama_file) }}"
+                    <a class="btn btn-sm btn-outline-primary" href="{{ asset('file/pelaksanaan/' . $pelaksanaan->id . '/file_perwaktu/' . $file->nama_file) }}"
                       target="_blank">
                       Download
                     </a>
@@ -261,7 +262,7 @@ $masterLayout = 'layouts.dashboardsurveiyor';
                 file size 50 MB</div>
             </div>
           </div>
-          
+
         </form>
       </div>
     </div>
