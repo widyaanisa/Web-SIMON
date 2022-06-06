@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\PelaksanaanExport;
 use App\Models\FileLaporan;
 use App\Models\FilePelaksanaan;
 use App\Models\FilePerwaktu;
@@ -11,6 +12,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
+use Maatwebsite\Excel\Facades\Excel;
 
 class PelaksanaanController extends Controller
 {
@@ -41,6 +43,11 @@ class PelaksanaanController extends Controller
 	public function create()
 	{
 		//
+	}
+
+	public function export(Request $request)
+	{
+		return Excel::download(new PelaksanaanExport(Pelaksanaan::all()), 'pelaksanaan.xlsx');
 	}
 
 	/**

@@ -54,7 +54,7 @@ Route::get('/reload-captcha', [loginController::class, 'reloadCaptcha']);
 |
 */
 Route::get('forget-password', [ForgotPasswordController::class, 'showForgetPasswordForm'])->name('forget.password.get');
-Route::post('forget-password', [ForgotPasswordController::class, 'submitForgetPasswordForm'])->name('forget.password.post'); 
+Route::post('forget-password', [ForgotPasswordController::class, 'submitForgetPasswordForm'])->name('forget.password.post');
 Route::get('reset-password/{token}', [ForgotPasswordController::class, 'showResetPasswordForm'])->name('reset.password.get');
 Route::post('reset-password', [ForgotPasswordController::class, 'submitResetPasswordForm'])->name('reset.password.post');
 
@@ -68,6 +68,7 @@ Route::post('/register', [RegisterController::class, 'buat'])->name('register-us
 
 Route::group(['middleware' => ['auth']], function () {
     Route::resource('pelaksanaan', PelaksanaanController::class);
+    Route::post('pelaksanaan/export', [PelaksanaanController::class, 'export']);
     Route::post('pelaksanaan/{id}/removeFile', [PelaksanaanController::class, 'removeFile'])->name('pelaksanaan.removefile');
     Route::post('pelaksanaan/{id}/addFile', [PelaksanaanController::class, 'addFile'])->name('pelaksanaan.addfile');
 

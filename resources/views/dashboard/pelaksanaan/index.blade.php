@@ -42,8 +42,14 @@ $masterLayout = 'layouts.dashboarduser';
 
     <div class="card shadow mb-4">
       <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-        @if (auth()->user()->role != 'surveiyor')
-        <a class="btn btn-info add-new " href="#" data-toggle="modal" data-target="#formdatapelaksanaanModal"><i class="fa fa-plus"></i> Add New</a>
+        @if ($role != 'surveiyor')
+          <a class="btn btn-info add-new " href="#" data-toggle="modal" data-target="#formdatapelaksanaanModal"><i class="fa fa-plus"></i> Add New</a>
+        @endif
+        @if ($role == 'mainadmin' || $role == 'admin')
+          <form action="/pelaksanaan/export" method="post">
+            @csrf
+            <button class="btn btn-info" type="submit"><i class="fa fa-download"></i> Export</button>
+          </form>
         @endif
       </div>
       <div class="card-body">
@@ -147,7 +153,7 @@ $masterLayout = 'layouts.dashboarduser';
             <div class="form-row">
               <div class="name">Bulan - Tahun</div>
               <div class="value">
-                <input pattern="\d{1,2}-\d{4}"  class="form-control bg-white border-1 small mr-4" id="input-month" type="text" name="bulan_tahun">
+                <input pattern="\d{1,2}-\d{4}" class="form-control bg-white border-1 small mr-4" id="input-month" type="text" name="bulan_tahun">
               </div>
             </div>
 
@@ -165,14 +171,14 @@ $masterLayout = 'layouts.dashboarduser';
             <div class="form-row">
               <div class="name">No. Sprint</div>
               <div class="value">
-                <input  class="form-control bg-white border-1 small mr-4" type="number" name="no_sprint">
+                <input class="form-control bg-white border-1 small mr-4" type="number" name="no_sprint">
               </div>
             </div>
             <div class="form-row">
               <div class="name">Tentang</div>
               <div id="wrapper-file-pelaksanaan" class="value">
                 <div class="input-group js-input-file">
-                  <input  type="file" id="file-pelaksanaan" class="form-control" name="file_pelaksanaan[]" multiple="true" > 
+                  <input type="file" id="file-pelaksanaan" class="form-control" name="file_pelaksanaan[]" multiple="true">
                   <button type="button" id="btn-add-file-pelaksanaan" style="border-top-left-radius: 0; border-bottom-left-radius: 0;" class="btn btn-primary">
                     <i class="fas fa-plus"></i>
                   </button>
@@ -188,15 +194,15 @@ $masterLayout = 'layouts.dashboarduser';
             <div class="form-row">
               <div class="name">Waktu</div>
               <div class="value">
-                <input  class="form-control bg-white border-1 small mr-4" type="time" name="waktu">
+                <input class="form-control bg-white border-1 small mr-4" type="time" name="waktu">
               </div>
             </div>
             <div class="form-row">
               <div class="name">Personal</div>
               <div class="value">
-                 @foreach ($users as $user)
-                  <input value="{{ $user->nama_pengguna }}"class="form-control bg-white border-1 small mr-4" type="text" name="personal" readonly>
-                  @endforeach
+                @foreach ($users as $user)
+                  <input value="{{ $user->nama_pengguna }}" class="form-control bg-white border-1 small mr-4" type="text" name="personal" readonly>
+                @endforeach
                 {{-- <select class="form-control bg-white border-1 small mr-4" placeholder="Pilih Data" aria-label="select" name="personal" required>
                   <option value="">-Pilih-</option>
                   @foreach ($users as $user)
@@ -209,7 +215,7 @@ $masterLayout = 'layouts.dashboarduser';
               <div class="name">Laporan Kegiatan</div>
               <div id="wrapper-file-laporan" class="value">
                 <div class="input-group js-input-file">
-                  <input  type="file" id="file-laporan" class="form-control" name="file_laporan[]" multiple="true">
+                  <input type="file" id="file-laporan" class="form-control" name="file_laporan[]" multiple="true">
                   <button type="button" id="btn-add-file-laporan" style="border-top-left-radius: 0; border-bottom-left-radius: 0;" class="btn btn-primary">
                     <i class="fas fa-plus"></i>
                   </button>
@@ -226,7 +232,7 @@ $masterLayout = 'layouts.dashboarduser';
               <div class="name">Perwaktu</div>
               <div id="wrapper-file-perwaktu" class="value">
                 <div class="input-group js-input-file">
-                  <input  type="file" id="file-perwaktu" class="form-control" name="file_perwaktu[]" multiple="true"> 
+                  <input type="file" id="file-perwaktu" class="form-control" name="file_perwaktu[]" multiple="true">
                   <button type="button" id="btn-add-file-perwaktu" style="border-top-left-radius: 0; border-bottom-left-radius: 0;" class="btn btn-primary">
                     <i class="fas fa-plus"></i>
                   </button>
@@ -242,7 +248,7 @@ $masterLayout = 'layouts.dashboarduser';
             <div class="form-row">
               <div class="name">Outcome</div>
               <div class="value">
-                <input  id="outcome" type="hidden" name="outcome">
+                <input id="outcome" type="hidden" name="outcome">
                 <trix-editor input="outcome"></trix-editor>
               </div>
             </div>
@@ -259,110 +265,94 @@ $masterLayout = 'layouts.dashboarduser';
 @endsection
 
 @push('js')
-<script>
-  var valid = false;
-  
-  function validate_fileupload(input_element)
-  {
-      var el = document.getElementById("wrapper-file-pelaksanaan","wrapper-file-laporan","wrapper-file-perwaktu");
+  <script>
+    var valid = false;
+
+    function validate_fileupload(input_element) {
+      var el = document.getElementById("wrapper-file-pelaksanaan", "wrapper-file-laporan", "wrapper-file-perwaktu");
       var fileName = input_element.value;
-      var allowed_extensions = new Array("jpg","png","gif","pdf");
-      var file_extension = fileName.split('.').pop(); 
-      for(var i = 0; i < allowed_extensions.length; i++)
-      {
-          if(allowed_extensions[i]==file_extension)
-          {
-              valid = true; // valid file extension
-              return;
-          }
+      var allowed_extensions = new Array("jpg", "png", "gif", "pdf");
+      var file_extension = fileName.split('.').pop();
+      for (var i = 0; i < allowed_extensions.length; i++) {
+        if (allowed_extensions[i] == file_extension) {
+          valid = true; // valid file extension
+          return;
+        }
       }
-      el.innerHTML="Invalid file";
+      el.innerHTML = "Invalid file";
       valid = false;
-  }
-  
-  function valid_form()
-  {
+    }
+
+    function valid_form() {
       return valid;
-  }
-    </script>
-    <script>
-      var valid = false;
-      
-      function validate_fileupload(input_element)
-      {
-          var el = document.getElementById("wrapper-file-pelaksanaan");
-          var fileName = input_element.value;
-          var allowed_extensions = new Array("jpg","png","gif","pdf");
-          var file_extension = fileName.split('.').pop(); 
-          for(var i = 0; i < allowed_extensions.length; i++)
-          {
-              if(allowed_extensions[i]==file_extension)
-              {
-                  valid = true; // valid file extension
-                  return;
-              }
-          }
-          el.innerHTML="Invalid file";
-          valid = false;
+    }
+  </script>
+  <script>
+    var valid = false;
+
+    function validate_fileupload(input_element) {
+      var el = document.getElementById("wrapper-file-pelaksanaan");
+      var fileName = input_element.value;
+      var allowed_extensions = new Array("jpg", "png", "gif", "pdf");
+      var file_extension = fileName.split('.').pop();
+      for (var i = 0; i < allowed_extensions.length; i++) {
+        if (allowed_extensions[i] == file_extension) {
+          valid = true; // valid file extension
+          return;
+        }
       }
-      
-      function valid_form()
-      {
-          return valid;
+      el.innerHTML = "Invalid file";
+      valid = false;
+    }
+
+    function valid_form() {
+      return valid;
+    }
+  </script>
+  <script>
+    var valid = false;
+
+    function validate_fileupload2(input_element) {
+      var el = document.getElementById("wrapper-file-laporan");
+      var fileName = input_element.value;
+      var allowed_extensions = new Array("jpg", "png", "gif", "pdf");
+      var file_extension = fileName.split('.').pop();
+      for (var i = 0; i < allowed_extensions.length; i++) {
+        if (allowed_extensions[i] == file_extension) {
+          valid = true; // valid file extension
+          return;
+        }
       }
-        </script>
-         <script>
-          var valid = false;
-          
-          function validate_fileupload2(input_element)
-          {
-              var el = document.getElementById("wrapper-file-laporan");
-              var fileName = input_element.value;
-              var allowed_extensions = new Array("jpg","png","gif","pdf");
-              var file_extension = fileName.split('.').pop(); 
-              for(var i = 0; i < allowed_extensions.length; i++)
-              {
-                  if(allowed_extensions[i]==file_extension)
-                  {
-                      valid = true; // valid file extension
-                      return;
-                  }
-              }
-              el.innerHTML="Invalid file";
-              valid = false;
-          }
-          
-          function valid_form()
-          {
-              return valid;
-          }
-            </script>
-             <script>
-              var valid = false;
-              
-              function validate_fileupload3(input_element)
-              {
-                  var el = document.getElementById("wrapper-file-perwaktu");
-                  var fileName = input_element.value;
-                  var allowed_extensions = new Array("jpg","png","gif","pdf");
-                  var file_extension = fileName.split('.').pop(); 
-                  for(var i = 0; i < allowed_extensions.length; i++)
-                  {
-                      if(allowed_extensions[i]==file_extension)
-                      {
-                          valid = true; // valid file extension
-                          return;
-                      }
-                  }
-                  el.innerHTML="Invalid file";
-                  valid = false;
-              }
-              
-              function valid_form()
-              {
-                  return valid;
-              }
-                </script>
+      el.innerHTML = "Invalid file";
+      valid = false;
+    }
+
+    function valid_form() {
+      return valid;
+    }
+  </script>
+  <script>
+    var valid = false;
+
+    function validate_fileupload3(input_element) {
+      var el = document.getElementById("wrapper-file-perwaktu");
+      var fileName = input_element.value;
+      var allowed_extensions = new Array("jpg", "png", "gif", "pdf");
+      var file_extension = fileName.split('.').pop();
+      for (var i = 0; i < allowed_extensions.length; i++) {
+        if (allowed_extensions[i] == file_extension) {
+          valid = true; // valid file extension
+          return;
+        }
+      }
+      el.innerHTML = "Invalid file";
+      valid = false;
+    }
+
+    function valid_form() {
+      return valid;
+    }
+  </script>
   <script>
     $(document).ready(function() {
       $("#input-month").datepicker({
